@@ -60,8 +60,6 @@ You are a strict, detailed, and honest resume reviewer.
 Review the following resume content and return the output as raw JSON ONLY.
 Do NOT include ```json or ``` or any markdown formatting.
 
-Applying for {job_title}
-
 Resume Content:
 {content}
 
