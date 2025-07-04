@@ -12,3 +12,6 @@ python-dotenv
 
 # type safety
 pydantic
+
+# uviconfig
+uvicorn
