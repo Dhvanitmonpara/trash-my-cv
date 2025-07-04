@@ -60,6 +60,8 @@ You are a strict, detailed, and honest resume reviewer.
 Review the following resume content and return the output as raw JSON ONLY.
 Do NOT include ```json or ``` or any markdown formatting.
 
+Applying for {job_title}
+
 Resume Content:
 {content}
 
@@ -89,7 +91,6 @@ async def upload_resume(file: UploadFile = File(...)):
     file_id = str(uuid4())
     file_ext = os.path.splitext(file.filename)[-1]
     save_path = os.path.join(UPLOAD_DIR, f"{file_id}{file_ext}")
-    print("📄 File saved to:", save_path)
 
     # Save file
     try:
@@ -101,18 +102,14 @@ async def upload_resume(file: UploadFile = File(...)):
     try:
         # Load + process PDF
         loader = PyPDFLoader(save_path)
-        print("📘 PDF loaded")
         docs = loader.load()
         resume_text = docs[0].page_content if docs else ""
         if not resume_text.strip():
             raise Exception("Empty PDF or unreadable content.")
 
 
-        print("🚀 Upload started")
         formatted_prompt = prompt.format(content=resume_text)
-        print("📢 Prompt ready")
         response = llm.invoke(formatted_prompt)
-        print("🧠 LLM responded")
         cleaned = clean_json_response(response.content)
 
         return JSONResponse(content=json.loads(cleaned))
