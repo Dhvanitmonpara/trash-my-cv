@@ -15,3 +15,6 @@ pydantic
 
 # uviconfig
 uvicorn
+
+# fastapi
+fastapi
