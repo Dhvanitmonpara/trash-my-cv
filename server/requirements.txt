@@ -1,0 +1,14 @@
+# Langchain core
+langchain
+langchain-core
+langchain_community
+
+# Google gemini (PaLM) integration
+langchain-google-genai
+google-generativeai
+
+# Env management
+python-dotenv
+
+# type safety
+pydantic
