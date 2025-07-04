@@ -7,15 +7,20 @@ from pydantic import BaseModel, Field
 from typing import List, Literal
 from fastapi import FastAPI, File, UploadFile, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.responses import JSONResponse
 import os
 import shutil
 from uuid import uuid4
+import json
 
 load_dotenv()
 
 app = FastAPI()
 
-origins = [origin.strip() for origin in os.environ.get("CORS_ORIGIN").split(",")]
+cors_origins_raw = os.environ.get("CORS_ORIGIN")
+if not cors_origins_raw:
+    raise RuntimeError("CORS_ORIGIN env var is missing")
+origins = [origin.strip() for origin in cors_origins_raw.split(",")]
 
 app.add_middleware(
     CORSMiddleware,
@@ -67,6 +72,15 @@ Resume Content:
 UPLOAD_DIR = "uploads"
 os.makedirs(UPLOAD_DIR, exist_ok=True)
 
+@app.middleware("http")
+async def log_exceptions(request, call_next):
+    try:
+        return await call_next(request)
+    except Exception as e:
+        import traceback
+        print("🔥 EXCEPTION:", traceback.format_exc())
+        return JSONResponse(status_code=500, content={"error": str(e)})
+
 @app.post("/upload-resume/")
 async def upload_resume(file: UploadFile = File(...)):
     if not file.filename.lower().endswith(".pdf"):
@@ -75,6 +89,7 @@ async def upload_resume(file: UploadFile = File(...)):
     file_id = str(uuid4())
     file_ext = os.path.splitext(file.filename)[-1]
     save_path = os.path.join(UPLOAD_DIR, f"{file_id}{file_ext}")
+    print("📄 File saved to:", save_path)
 
     # Save file
     try:
@@ -86,16 +101,21 @@ async def upload_resume(file: UploadFile = File(...)):
     try:
         # Load + process PDF
         loader = PyPDFLoader(save_path)
+        print("📘 PDF loaded")
         docs = loader.load()
         resume_text = docs[0].page_content if docs else ""
         if not resume_text.strip():
             raise Exception("Empty PDF or unreadable content.")
 
+
+        print("🚀 Upload started")
         formatted_prompt = prompt.format(content=resume_text)
+        print("📢 Prompt ready")
         response = llm.invoke(formatted_prompt)
+        print("🧠 LLM responded")
         cleaned = clean_json_response(response.content)
 
-        return cleaned
+        return JSONResponse(content=json.loads(cleaned))
 
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Failed to analyze resume: {str(e)}")

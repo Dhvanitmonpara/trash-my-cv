@@ -40,10 +40,16 @@ const ResumeUpload: React.FC<ResumeUploadProps> = ({ onReviewReceived }) => {
       const response = await axios.post(`${import.meta.env.VITE_SERVER_URI}/upload-resume/`, formData, {
         headers: {
           "Content-Type": "multipart/form-data",
+          "Access-Control-Allow-Origin": import.meta.env.VITE_SERVER_URI
         },
       });
 
-      onReviewReceived(JSON.parse(response.data));
+      if(response.status !== 200){
+        setError("Failed to analyze resume")
+        return
+      }
+
+      onReviewReceived(response.data);
     } catch (err: unknown) {
       if (isAxiosError(err)) {
         setError(err.response?.data?.detail || "Failed to analyze resume.");
