@@ -37,7 +37,7 @@ const ResumeUpload: React.FC<ResumeUploadProps> = ({ onReviewReceived }) => {
     formData.append("file", file);
 
     try {
-      const response = await axios.post("http://127.0.0.1:8000/upload-resume/", formData, {
+      const response = await axios.post(`${import.meta.env.VITE_SERVER_URI}/upload-resume/`, formData, {
         headers: {
           "Content-Type": "multipart/form-data",
         },
