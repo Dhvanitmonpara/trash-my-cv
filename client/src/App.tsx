@@ -16,7 +16,10 @@ function App() {
           </button>
         </>
       ) : (
-        <ResumeUpload onReviewReceived={setReview} />
+        <>
+          <h1 className="text-2xl font-bold text-white">Trash My CV</h1>
+          <ResumeUpload onReviewReceived={setReview} />
+        </>
       )}
     </main>
   )
