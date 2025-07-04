@@ -40,7 +40,6 @@ const ResumeUpload: React.FC<ResumeUploadProps> = ({ onReviewReceived }) => {
       const response = await axios.post(`${import.meta.env.VITE_SERVER_URI}/upload-resume/`, formData, {
         headers: {
           "Content-Type": "multipart/form-data",
-          "Access-Control-Allow-Origin": "https://trashmycv.vercel.app/"
         },
       });
 
