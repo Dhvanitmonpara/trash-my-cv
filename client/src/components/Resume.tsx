@@ -40,11 +40,11 @@ const ResumeUpload: React.FC<ResumeUploadProps> = ({ onReviewReceived }) => {
       const response = await axios.post(`${import.meta.env.VITE_SERVER_URI}/upload-resume/`, formData, {
         headers: {
           "Content-Type": "multipart/form-data",
-          "Access-Control-Allow-Origin": "trashmycv.vercel.app",
         },
+        withCredentials: false
       });
 
-      if(response.status !== 200){
+      if (response.status !== 200) {
         setError("Failed to analyze resume")
         return
       }

@@ -81,6 +81,10 @@ async def log_exceptions(request, call_next):
         print("🔥 EXCEPTION:", traceback.format_exc())
         return JSONResponse(status_code=500, content={"error": str(e)})
 
+@app.options("/upload-resume/")
+async def options_upload_resume(request):
+    return JSONResponse(status_code=200, content={})
+
 @app.post("/upload-resume/")
 async def upload_resume(file: UploadFile = File(...)):
     if not file.filename.lower().endswith(".pdf"):
